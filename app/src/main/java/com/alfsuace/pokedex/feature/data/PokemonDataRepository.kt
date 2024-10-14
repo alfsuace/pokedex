@@ -9,19 +9,37 @@ class PokemonDataRepository(
     private val localDataSource: PokemonXmlDataSource,
     private val remoteDataSource: PokemonRemoteApiDataSource
 ): PokemonRepository {
-    override fun getPokemons(): List<Pokemon> {
-        TODO("Not yet implemented")
+    override suspend fun getPokemons(): List<Pokemon> {
+        val localMons = localDataSource.getPokemons()
+        if (localMons.isEmpty()) {
+            val remoteMons = remoteDataSource.getAllPokemons()
+            //localDataSource.savePokemons(remoteMons)
+            //save not done to avoid memory runouts
+            return remoteMons
+        }else{
+            return localMons
+        }
     }
 
-    override fun getPokemon(id: Int): Pokemon {
-        TODO("Not yet implemented")
+    override suspend fun getPokemonById(id: String): Pokemon?{
+        val localMons = localDataSource.getPokemon(id)
+        if (localMons == null) {
+            val remoteMons = remoteDataSource.getPokemonById(id)
+            remoteMons?.let {
+                localDataSource.savePokemon(it)
+            }
+            return remoteMons
+        }else{
+            return localMons
+        }
+
     }
 
     override fun savePokemons(pokemons: List<Pokemon>) {
-        TODO("Not yet implemented")
+        localDataSource.savePokemons(pokemons)
     }
 
     override fun savePokemon(pokemon: Pokemon) {
-        TODO("Not yet implemented")
+        localDataSource.savePokemon(pokemon)
     }
 }

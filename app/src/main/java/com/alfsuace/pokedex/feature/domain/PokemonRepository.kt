@@ -2,8 +2,8 @@ package com.alfsuace.pokedex.feature.domain
 
 interface PokemonRepository {
 
-    fun getPokemons(): List<Pokemon>
-    fun getPokemon(id: Int): Pokemon
+    suspend fun getPokemons(): List<Pokemon>
+    suspend fun getPokemonById(id: String): Pokemon?
     fun savePokemons (pokemons: List<Pokemon>)
     fun savePokemon (pokemon: Pokemon)
 
